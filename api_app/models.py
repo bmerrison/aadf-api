@@ -6,4 +6,4 @@ class Junction(models.Model):
     description: A string (max. length 200) describing the junction.
     """
     
-    description = models.CharField(max_length=200) 
+    description = models.CharField(max_length=200, unique=True) 

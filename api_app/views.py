@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from api_app.models import Junction
+from api_app.serializers import JunctionSerializer
+
+class JunctionViewSet(viewsets.ModelViewSet):
+    queryset = Junction.objects.all()
+    serializer_class = JunctionSerializer
+    
