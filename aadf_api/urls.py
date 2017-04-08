@@ -16,10 +16,15 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
+from rest_framework.schemas import get_schema_view
 from api_app import views
 
 router = DefaultRouter()
 router.register(r'junctions', views.JunctionViewSet)
+router.register(r'estimation_methods', views.EstimationMethodViewSet)
+schema_view = get_schema_view(title='Average Annual Daily Flow API')
+
 urlpatterns = [
+    url(r'^schema/$', schema_view),
     url(r'^', include(router.urls))
 ]

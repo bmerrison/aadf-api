@@ -7,3 +7,11 @@ class Junction(models.Model):
     """
     
     description = models.CharField(max_length=200, unique=True) 
+
+class EstimationMethod(models.Model):
+    """A method of estimating the traffic flow.
+    Attributes:
+    description: A (potentially long) string describing the method.
+    """
+
+    description = models.TextField(unique=True) 
