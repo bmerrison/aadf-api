@@ -31,6 +31,8 @@ if __name__ == '__main__':
     junc_descs = set([r["StartJunction"] for r in all_rows] +
                      [r["EndJunction"] for r in all_rows])
     junc_descs.discard('')
+    # junction_ids will contain a mapping from junction description to database ID.
+    junction_ids = {}
     print("Importing {0} junctions...".format(len(junc_descs)))
     # Add junctions to the database.
     for junc_desc in junc_descs:
@@ -38,6 +40,7 @@ if __name__ == '__main__':
             resp = client.action(schema,
                                  ['junctions', 'create'],
                                  params={'description': junc_desc})
+            junction_ids[junc_desc] = resp.get('id')
         except ErrorMessage as err:
             print("Error adding junction: {0}".format(err.error))
             raise
@@ -130,5 +133,50 @@ if __name__ == '__main__':
             road_cat_ids[(road_name, cat_code)] = resp.get('id')
         except ErrorMessage as err:
             print("Error adding road: {0}".format(err.error))
-            raise        
+            raise
+
+    # cp_ids will contain a mapping from (CP reference, region, local authority,
+    # road, road category, easting, northing, start junction, end junction) to
+    # database ID. Ridiculous, but unfortunately all those values are needed to
+    # uniquely identify a count point!
+    cp_ids = {}
+    count_points = set([(r['CP'], r['Region'], r['LocalAuthority'],
+                         r['Road'], r['RoadCategory'], r['Easting'], r['Northing'],
+                         r['StartJunction'], r['EndJunction'],
+                         round(float(r['LinkLength_km']), 1))
+                        for r in all_rows])
+    print("Importing {0} count points...".format(len(count_points)))
+    for cp in count_points:
+        auth_id = authority_ids[(cp[1], cp[2])]
+        road_id = road_cat_ids[(cp[3], cp[4])]
+        start_junction_id = junction_ids[cp[7]] if cp[7] in junction_ids else None
+        end_junction_id = junction_ids[cp[8]] if cp[8] in junction_ids else None
+        try:
+            resp = client.action(schema,
+                                 ['count_points', 'create'],
+                                 params={'reference': int(cp[0]),
+                                         'local_authority': auth_id,
+                                         'road': road_id,
+                                         'easting': int(cp[5]),
+                                         'northing': int(cp[6]),
+                                         'start_junction': start_junction_id,
+                                         'end_junction': end_junction_id,
+                                         'link_length': cp[9]})
+            key = (cp[0], auth_id, road_id, cp[5], cp[6], start_junction_id, end_junction_id)
+            assert(key not in cp_ids)
+            cp_ids[key] = resp.get('id')
+        except ErrorMessage as err:
+            print("Error adding count point: {0}".format(err.error))
+            raise
+
+    
+    # count_point_ids = set([cp[0] for cp in count_points])
+    # dodgy_cps = {cp_id: len([cp for cp in count_points if cp[0] == cp_id]) for cp_id in count_point_ids}
+    # for k,v in dodgy_cps.items():
+    #     if v > 1: print(k)
+
+    # print(len(count_points))
+    # print(len(count_point_ids))
+    # assert(len(count_points) == len(count_point_ids))
+    
     print("Import complete.")

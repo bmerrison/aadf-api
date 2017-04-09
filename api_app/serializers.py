@@ -4,7 +4,8 @@ from api_app.models import Junction, \
     Region, \
     LocalAuthority, \
     RoadCategory, \
-    Road
+    Road, \
+    CountPoint
 
 class JunctionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,7 +36,7 @@ class LocalAuthoritySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'region', 'region_name')        
 
 class RoadCategorySerializer(serializers.ModelSerializer):
- 
+    
     class Meta:
         model = RoadCategory
         fields = ('id', 'code', 'description' )
@@ -46,4 +47,12 @@ class RoadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Road
         fields = ('id', 'name', 'category', 'category_code' )
+
+class CountPointSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = CountPoint
+        fields = ('id', 'reference', 'local_authority', 'road', 'easting', 'northing',
+                  'start_junction', 'end_junction', 'link_length')
+        
         

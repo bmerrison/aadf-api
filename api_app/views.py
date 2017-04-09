@@ -5,14 +5,16 @@ from api_app.models import Junction, \
     Region, \
     LocalAuthority, \
     RoadCategory, \
-    Road
+    Road, \
+    CountPoint
 
 from api_app.serializers import JunctionSerializer, \
     EstimationMethodSerializer, \
     RegionSerializer, \
     LocalAuthoritySerializer, \
     RoadCategorySerializer, \
-    RoadSerializer
+    RoadSerializer, \
+    CountPointSerializer
 
 class JunctionViewSet(viewsets.ModelViewSet):
     queryset = Junction.objects.all()
@@ -37,5 +39,9 @@ class RoadCategoryViewSet(viewsets.ModelViewSet):
 class RoadViewSet(viewsets.ModelViewSet):
     queryset = Road.objects.all()
     serializer_class = RoadSerializer
+
+class CountPointViewSet(viewsets.ModelViewSet):
+    queryset = CountPoint.objects.all()
+    serializer_class = CountPointSerializer    
 
     

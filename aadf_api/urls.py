@@ -26,6 +26,8 @@ router.register(r'regions', views.RegionViewSet)
 router.register(r'local_authorities', views.LocalAuthorityViewSet)
 router.register(r'road_categories', views.RoadCategoryViewSet)
 router.register(r'roads', views.RoadViewSet)
+router.register(r'count_points', views.CountPointViewSet)
+
 schema_view = get_schema_view(title='Average Annual Daily Flow API')
 
 urlpatterns = [
