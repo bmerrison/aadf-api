@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from api_app.models import Junction, EstimationMethod
+from api_app.models import Junction, \
+    EstimationMethod, \
+    Region
 
 class JunctionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,3 +13,7 @@ class EstimationMethodSerializer(serializers.ModelSerializer):
         model = EstimationMethod
         fields = ('id', 'description')
         
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Region
+        fields = ('id', 'name')

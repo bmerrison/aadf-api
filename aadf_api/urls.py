@@ -22,6 +22,7 @@ from api_app import views
 router = DefaultRouter()
 router.register(r'junctions', views.JunctionViewSet)
 router.register(r'estimation_methods', views.EstimationMethodViewSet)
+router.register(r'regions', views.RegionViewSet)
 schema_view = get_schema_view(title='Average Annual Daily Flow API')
 
 urlpatterns = [
