@@ -38,3 +38,29 @@ class LocalAuthority(models.Model):
 
     class Meta:
         unique_together = (('name','region'),)
+
+class RoadCategory(models.Model):
+    """A code used to describe road types. This would probably be better as
+    an enumeration field in Road, but there appears to currently be a bug in
+    coreapi when using enums (https://github.com/core-api/python-client/issues/122).
+    Attributes:
+    code: A two-letter code for the category.
+    description: Text describing the category.
+    """
+    code = models.CharField(max_length=2, unique=True)
+    description = models.TextField(unique=True)
+    
+class Road(models.Model):
+    """A road that a count has been performed on.
+    Attributes:
+    name: The road's name (max. length 20).
+    category: The road's Category. name,category pairs must be unique.
+    """
+
+    name = models.CharField(max_length=20)
+    category = models.ForeignKey('RoadCategory',
+                                 related_name='roads',
+                                 on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = (('name','category'),)

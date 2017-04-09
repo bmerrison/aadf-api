@@ -2,7 +2,9 @@ from rest_framework import serializers
 from api_app.models import Junction, \
     EstimationMethod, \
     Region, \
-    LocalAuthority
+    LocalAuthority, \
+    RoadCategory, \
+    Road
 
 class JunctionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,3 +33,17 @@ class LocalAuthoritySerializer(serializers.ModelSerializer):
     class Meta:
         model = LocalAuthority
         fields = ('id', 'name', 'region', 'region_name')        
+
+class RoadCategorySerializer(serializers.ModelSerializer):
+ 
+    class Meta:
+        model = RoadCategory
+        fields = ('id', 'code', 'description' )
+        
+class RoadSerializer(serializers.ModelSerializer):
+    category_code = serializers.ReadOnlyField(source='category.code')
+    
+    class Meta:
+        model = Road
+        fields = ('id', 'name', 'category', 'category_code' )
+        

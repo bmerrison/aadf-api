@@ -3,12 +3,16 @@ from rest_framework import viewsets
 from api_app.models import Junction, \
     EstimationMethod, \
     Region, \
-    LocalAuthority
+    LocalAuthority, \
+    RoadCategory, \
+    Road
 
 from api_app.serializers import JunctionSerializer, \
     EstimationMethodSerializer, \
     RegionSerializer, \
-    LocalAuthoritySerializer
+    LocalAuthoritySerializer, \
+    RoadCategorySerializer, \
+    RoadSerializer
 
 class JunctionViewSet(viewsets.ModelViewSet):
     queryset = Junction.objects.all()
@@ -25,5 +29,13 @@ class RegionViewSet(viewsets.ModelViewSet):
 class LocalAuthorityViewSet(viewsets.ModelViewSet):
     queryset = LocalAuthority.objects.all()
     serializer_class = LocalAuthoritySerializer
+
+class RoadCategoryViewSet(viewsets.ModelViewSet):
+    queryset = RoadCategory.objects.all()
+    serializer_class = RoadCategorySerializer
     
+class RoadViewSet(viewsets.ModelViewSet):
+    queryset = Road.objects.all()
+    serializer_class = RoadSerializer
+
     

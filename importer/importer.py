@@ -86,6 +86,49 @@ if __name__ == '__main__':
                                          'region': region_ids[region_name]})
             authority_ids[(region_name, authority_name)] = resp.get('id')
         except ErrorMessage as err:
-            print("Error adding authority: {0}".format(err.error))
+            print("Error adding local authority: {0}".format(err.error))
             raise
+
+    road_categories = (('PM', 'M or Class A Principal Motorway'),
+                       ('PR', 'Class A Principal road in Rural area'),
+                       ('PU', 'Class A Principal roadd in Urban area'),
+                       ('TM', 'M or Class T Trunk Motorway'),
+                       ('TR', 'Class T Trunk road in Rural area'),
+                       ('TU', 'Class T trunk road in Urban area'),
+                       ('BR', 'Class B road in Rural area'),
+                       ('BU', 'Class B road in Urban area'),
+                       ('CR', 'Class C road in Rural area'),
+                       ('CU', 'Class C road in Urban area'),
+                       ('UR', 'Class U road in Rural area'),
+                       ('UU', 'Class U road in Urban area'))
+    print("Importing {0} road categories...".format(len(road_categories)))
+    # road_cat_ids will contain a mapping of category codes to database IDs.
+    road_cat_ids = {}
+    for cat_code, cat_desc in road_categories:
+        try:
+            resp = client.action(schema,
+                                 ['road_categories', 'create'],
+                                 params={'code': cat_code,
+                                         'description': cat_desc})
+            road_cat_ids[cat_code] = resp.get('id')
+        except ErrorMessage as err:
+            print("Error adding road category: {0}".format(err.error))
+            raise        
+    
+    # Get a set of unique (road name, road category) pairs.
+    road_cat_pairs = set([(r['Road'], r['RoadCategory']) for r in all_rows])
+    print("Importing {0} roads...".format(len(road_cat_pairs)))
+    # road_cat_ids will contain a mapping of (road name, category code)
+    # pairs to database IDs.
+    road_ids = {}
+    for road_name, cat_code in road_cat_pairs:
+        try:
+            resp = client.action(schema,
+                                 ['roads', 'create'],
+                                 params={'name': road_name,
+                                         'category': road_cat_ids[cat_code]})
+            road_cat_ids[(road_name, cat_code)] = resp.get('id')
+        except ErrorMessage as err:
+            print("Error adding road: {0}".format(err.error))
+            raise        
     print("Import complete.")
