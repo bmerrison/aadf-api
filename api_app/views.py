@@ -2,11 +2,13 @@ from rest_framework import viewsets
 
 from api_app.models import Junction, \
     EstimationMethod, \
-    Region
+    Region, \
+    LocalAuthority
 
 from api_app.serializers import JunctionSerializer, \
     EstimationMethodSerializer, \
-    RegionSerializer
+    RegionSerializer, \
+    LocalAuthoritySerializer
 
 class JunctionViewSet(viewsets.ModelViewSet):
     queryset = Junction.objects.all()
@@ -19,3 +21,9 @@ class EstimationMethodViewSet(viewsets.ModelViewSet):
 class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
+
+class LocalAuthorityViewSet(viewsets.ModelViewSet):
+    queryset = LocalAuthority.objects.all()
+    serializer_class = LocalAuthoritySerializer
+    
+    
