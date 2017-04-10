@@ -5,7 +5,8 @@ from api_app.models import Junction, \
     LocalAuthority, \
     RoadCategory, \
     Road, \
-    CountPoint
+    CountPoint, \
+    TrafficCount
 
 class JunctionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -55,4 +56,13 @@ class CountPointSerializer(serializers.ModelSerializer):
         fields = ('id', 'reference', 'local_authority', 'road', 'easting', 'northing',
                   'start_junction', 'end_junction', 'link_length')
         
-        
+class TrafficCountSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TrafficCount
+        fields = ('id', 'count_point', 'year', 'estimated', 'estimation_method',
+                  'count_cycles', 'count_motorcycles', 'count_cars',
+                  'count_buses', 'count_lightgoods', 'count_hgv_2ax_rigid',
+                  'count_hgv_3ax_rigid', 'count_hgv_45ax_rigid',
+                  'count_hgv_34ax_artic', 'count_hgv_5ax_artic',
+                  'count_hgv_6plus_artic')

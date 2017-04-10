@@ -98,5 +98,36 @@ class CountPoint(models.Model):
         # different between years for a given count point reference. Treat each one
         # as a different count point (in reality would probably do some cleaning up
         # of the data).
-        unique_together = (('reference', 'road', 'easting','northing',
-                            'start_junction','end_junction'),)
+        unique_together = (('reference', 'road', 'easting', 'northing',
+                            'start_junction', 'end_junction'),)
+
+
+class TrafficCount(models.Model):
+    """A count that occured at a particular count point for a particular year.
+    Attributes:
+    count_point: Foreign key to the CountPoint where the count was made.
+    year: The year when the count was made.
+    estimated: Whether the count was an estimate or not.
+    estimation_method: The method used for estimation (or counting).
+    Various vehicle counts.
+    """
+    count_point = models.ForeignKey('CountPoint',
+                                    on_delete=models.CASCADE)
+    year = models.IntegerField()
+    estimated = models.BooleanField()
+    estimation_method = models.ForeignKey('EstimationMethod',
+                                          on_delete=models.CASCADE)
+    count_cycles = models.IntegerField()
+    count_motorcycles = models.IntegerField()
+    count_cars = models.IntegerField()
+    count_buses = models.IntegerField()
+    count_lightgoods = models.IntegerField()
+    count_hgv_2ax_rigid = models.IntegerField()
+    count_hgv_3ax_rigid = models.IntegerField()
+    count_hgv_45ax_rigid = models.IntegerField()
+    count_hgv_34ax_artic = models.IntegerField()
+    count_hgv_5ax_artic = models.IntegerField()
+    count_hgv_6plus_artic = models.IntegerField()
+    
+    class Meta:
+        unique_together = (('count_point', 'year'),)

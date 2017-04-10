@@ -49,6 +49,8 @@ if __name__ == '__main__':
     est_method_descs = set([r["Estimation_method_detailed"]
                             for r in all_rows])
     est_method_descs.discard('')
+    # est_method_ids will contain a mapping from estimation method description to database ID.
+    est_method_ids = {}
     print("Importing {0} estimation methods...".format(len(est_method_descs)))
     # Add estimation methods to the database.
     for est_method_desc in est_method_descs:
@@ -56,6 +58,7 @@ if __name__ == '__main__':
             resp = client.action(schema,
                                  ['estimation_methods', 'create'],
                                  params={'description': est_method_desc})
+            est_method_ids[est_method_desc] = resp.get('id')
         except ErrorMessage as err:
             print("Error adding estimation method: {0}".format(err.error))
             raise        
@@ -162,21 +165,46 @@ if __name__ == '__main__':
                                          'start_junction': start_junction_id,
                                          'end_junction': end_junction_id,
                                          'link_length': cp[9]})
-            key = (cp[0], auth_id, road_id, cp[5], cp[6], start_junction_id, end_junction_id)
+            key = (int(cp[0]), auth_id, road_id, int(cp[5]), int(cp[6]), start_junction_id, end_junction_id)
             assert(key not in cp_ids)
             cp_ids[key] = resp.get('id')
         except ErrorMessage as err:
             print("Error adding count point: {0}".format(err.error))
             raise
 
-    
-    # count_point_ids = set([cp[0] for cp in count_points])
-    # dodgy_cps = {cp_id: len([cp for cp in count_points if cp[0] == cp_id]) for cp_id in count_point_ids}
-    # for k,v in dodgy_cps.items():
-    #     if v > 1: print(k)
+    # Finally, import all count data.
+    print("Importing {0} traffic counts...".format(len(all_rows)))
+    for r in all_rows:
+        auth_id = authority_ids[(r['Region'], r['LocalAuthority'])]
+        road_id = road_cat_ids[(r['Road'], r['RoadCategory'])]
+        start_junction_id = junction_ids[r['StartJunction']] if r['StartJunction'] in junction_ids else None
+        end_junction_id = junction_ids[r['EndJunction']] if r['EndJunction'] in junction_ids else None
+        est_method_id = est_method_ids[r['Estimation_method_detailed']]
+        
+        cp_key = (int(r['CP']), auth_id, road_id, int(r['Easting']), int(r['Northing']),
+                  start_junction_id, end_junction_id)
+        
+        try:
+            resp = client.action(schema,
+                                 ['traffic_counts', 'create'],
+                                 params={'count_point': cp_ids[cp_key],
+                                         'year': int(r['AADFYear']),
+                                         'estimated': r['Estimation_method'] != 'Counted',
+                                         'estimation_method': est_method_id,
+                                         'count_cycles': int(r['PedalCycles']),
+                                         'count_motorcycles': int(r['Motorcycles']),
+                                         'count_cars': int(r['CarsTaxis']),
+                                         'count_buses': int(r['BusesCoaches']),
+                                         'count_lightgoods': int(r['LightGoodsVehicles']),
+                                         'count_hgv_2ax_rigid': int(r['V2AxleRigidHGV']),
+                                         'count_hgv_3ax_rigid': int(r['V3AxleRigidHGV']),
+                                         'count_hgv_45ax_rigid': int(r['V4or5AxleRigidHGV']),
+                                         'count_hgv_34ax_artic': int(r['V3or4AxleArticHGV']),
+                                         'count_hgv_5ax_artic': int(r['V5AxleArticHGV']),
+                                         'count_hgv_6plus_artic': int(r['V6orMoreAxleArticHGV'])})
+        except ErrorMessage as err:
+            print("Error adding road: {0}".format(err.error))
+            raise        
 
-    # print(len(count_points))
-    # print(len(count_point_ids))
-    # assert(len(count_points) == len(count_point_ids))
-    
+        
     print("Import complete.")
