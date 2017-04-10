@@ -1,11 +1,17 @@
+import shapefile
+from shapely.geometry import Polygon, Point
+
 import coreapi
 from coreapi.exceptions import ErrorMessage
 
 import csv, sys
 from itertools import count
 
+from util import OSGB36toWGS84
+
 if __name__ == '__main__':
     csv_path = sys.argv[1]
+    shapefile_name = sys.argv[2]
     
     # After the CSV file has been read, all_rows will contain a list
     # where each entry is name->value dictionary for a row.
@@ -21,10 +27,30 @@ if __name__ == '__main__':
             else:
                 all_rows.append({col: val for col, val in zip(col_names, row)})
 
-      
+    # Load ward geometry for certain local authorities from
+    # the ward shapefiles.
+    # This is a bit messy because it's hard-coded, but it's optional
+    # anyway - just saves comparing with every ward in the country for speed!
+    # auth_names = ['North Devon', 'West Devon', 'East Devon',
+    #               'Mid Devon', 'Torridge', 'Teignbridge']
+    sf = shapefile.Reader(shapefile_name)
+    field_names = [f[0] for f in sf.fields[1:]]
+    records = [{f: v for f, v in zip(field_names, record)} for record in sf.records()]
+    ward_polygons = []
+    auth_names = []
+    for record, shape in zip(records, sf.shapes()):
+        auth_name = record['lad16nm']
+        if auth_name not in auth_names:
+            auth_names.append(auth_name) # Yuck, should use set!
+
+        ward_name = record['wd16nm']
+        ward_polygon = Polygon(shape.points)
+        ward_polygons.append((ward_polygon, ward_name, auth_name))
+    print("Loaded {0} ward shapes from {1}.".format(len(ward_polygons), shapefile_name))
+
+    # Get API schema.
     client = coreapi.Client()
     schema = client.get('http://localhost:8000/schema')
-    print(schema)
 
     # Get a set of unique junction descriptions by combining all values from
     # the "StartJunction" and "EndJunction" columns.
@@ -79,22 +105,39 @@ if __name__ == '__main__':
             raise
 
     # Get a set of unique (region name, local authority name) pairs.
-    region_auth_pairs = set([(r['Region'], r['LocalAuthority']) for r in all_rows])
-    print("Importing {0} local authorities...".format(len(region_auth_pairs)))
+    # Since I'm not getting local authorities from the shapefile, no
+    # easy way to get the corresponding region so just hard code South West...
+    print("Importing {0} local authorities...".format(len(auth_names)))
     # region_auth_ids will contain a mapping of (region,auth) name
     # pairs to database IDs.
     authority_ids = {}
-    for region_name, authority_name in region_auth_pairs:
+    for authority_name in auth_names:
         try:
             resp = client.action(schema,
                                  ['local_authorities', 'create'],
                                  params={'name': authority_name,
-                                         'region': region_ids[region_name]})
+                                         'region': region_ids['South West']})
             authority_ids[(region_name, authority_name)] = resp.get('id')
         except ErrorMessage as err:
             print("Error adding local authority: {0}".format(err.error))
             raise
 
+    # Add wards to the database. ward_ids will contain a mapping from ward name
+    # to database ID.
+    ward_ids = {}
+    print("Importing {0} wards...".format(len(ward_polygons)))
+    for _, ward_name, auth_name in ward_polygons:
+        try:
+            auth_id = authority_ids[('South West', auth_name)]
+            resp = client.action(schema,
+                                 ['wards', 'create'],
+                                 params={'name': ward_name,
+                                         'local_authority': auth_id})
+            ward_ids[(auth_name, ward_name)] = resp.get('id')
+        except ErrorMessage as err:
+            print("Error adding ward: {0}".format(err.error))
+            raise
+    
     road_categories = (('PM', 'M or Class A Principal Motorway'),
                        ('PR', 'Class A Principal road in Rural area'),
                        ('PU', 'Class A Principal roadd in Urban area'),
@@ -150,28 +193,43 @@ if __name__ == '__main__':
                         for r in all_rows])
     print("Importing {0} count points...".format(len(count_points)))
     for cp in count_points:
-        auth_id = authority_ids[(cp[1], cp[2])]
         road_id = road_cat_ids[(cp[3], cp[4])]
         start_junction_id = junction_ids[cp[7]] if cp[7] in junction_ids else None
         end_junction_id = junction_ids[cp[8]] if cp[8] in junction_ids else None
+        easting = int(cp[5])
+        northing = int(cp[6])
+
+        # Look up ward...
+        lat, lon = OSGB36toWGS84(easting, northing)
+        point = Point(lon, lat)
+        auth_ward_names = [(auth_name, ward_name)
+                           for poly, ward_name, auth_name in ward_polygons
+                           if poly.contains(point)]
+        if len(auth_ward_names) != 1:
+            continue
+
+        auth_id = authority_ids[('South West', auth_ward_names[0][0])]
+        
         try:
             resp = client.action(schema,
                                  ['count_points', 'create'],
                                  params={'reference': int(cp[0]),
                                          'local_authority': auth_id,
                                          'road': road_id,
-                                         'easting': int(cp[5]),
-                                         'northing': int(cp[6]),
+                                         'easting': easting,
+                                         'northing': northing,
                                          'start_junction': start_junction_id,
                                          'end_junction': end_junction_id,
                                          'link_length': cp[9]})
-            key = (int(cp[0]), auth_id, road_id, int(cp[5]), int(cp[6]), start_junction_id, end_junction_id)
+            key = (int(cp[0]), auth_id, road_id, easting, northing, start_junction_id, end_junction_id)
             assert(key not in cp_ids)
             cp_ids[key] = resp.get('id')
         except ErrorMessage as err:
             print("Error adding count point: {0}".format(err.error))
             raise
 
+    quit()
+    
     # Finally, import all count data.
     print("Importing {0} traffic counts...".format(len(all_rows)))
     for r in all_rows:

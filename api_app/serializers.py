@@ -3,6 +3,7 @@ from api_app.models import Junction, \
     EstimationMethod, \
     Region, \
     LocalAuthority, \
+    Ward, \
     RoadCategory, \
     Road, \
     CountPoint, \
@@ -34,7 +35,13 @@ class LocalAuthoritySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = LocalAuthority
-        fields = ('id', 'name', 'region', 'region_name')        
+        fields = ('id', 'name', 'region', 'region_name')
+
+class WardSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Ward
+        fields = ('id', 'name', 'local_authority')                
 
 class RoadCategorySerializer(serializers.ModelSerializer):
     

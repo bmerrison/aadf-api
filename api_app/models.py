@@ -1,5 +1,5 @@
 from django.db import models
-
+  
 class Junction(models.Model):
     """A junction where roads meet. Each count point is between two junctions.
     Attributes:
@@ -39,6 +39,19 @@ class LocalAuthority(models.Model):
     class Meta:
         unique_together = (('name','region'),)
 
+class Ward(models.Model):
+    """A regional ward, associated with a particular local authority.
+    Attributes:
+    name: The ward's official name (max. length 50).
+    local_authority: Foreign key to the LocalAuthority that the ward is located in.    
+    """
+    
+    name = models.CharField(max_length=100)
+    local_authority = models.ForeignKey('LocalAuthority',
+                                        on_delete=models.CASCADE)
+    class Meta:
+        unique_together = (('name','local_authority'),)
+        
 class RoadCategory(models.Model):
     """A code used to describe road types. This would probably be better as
     an enumeration field in Road, but there appears to currently be a bug in
