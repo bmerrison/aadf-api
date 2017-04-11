@@ -2,5 +2,5 @@ django==1.11
 djangorestframework==3.6.2
 pytest-django==3.1.2
 coreapi==2.3.0
-pyshp=1.2.10
-shapely=1.5.17.post1
+pyshp==1.2.10
+shapely==1.5.17.post1
