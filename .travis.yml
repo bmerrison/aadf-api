@@ -9,4 +9,4 @@ install:
 script: py.test
 
 notifications:
-  irc: "ircs://irc.asylumnet.org#wuzzle"
+  irc: "ircs://irc.asylumnet.org/#wuzzle"
