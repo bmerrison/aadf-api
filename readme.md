@@ -14,19 +14,11 @@ The API uses the following object types, which correspond to database tables:
 ## Using the API
 The API is has a standard RESTful interface. The available methods are documented [here](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/docs/). The interface follows the [CoreAPI](http://www.coreapi.org/) standard, meaning the CoreAPI command line interface or Python/Javascript libraries can (optionally) be used to make calls. The [documentation](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/docs/) can show code examples using CLI/Python/Javascript for each available method.
 ### Examples
-List of all wards, as an HTML page:
-[http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/)
-The same, but as raw JSON:
-[http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards.json](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards.json)
-Details of ward with ID 1, as an HTML page:
-[http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/1/](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/1/)
-The same, but as raw JSON:
-[http://aadf-api-live.eu-west-2.elasticbeanstalk.com/ward/1.json](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/1.json)
+* List of all wards, as an HTML page: [http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/) (or as [raw JSON](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards.json))
+* Details of ward with ID 1, as an HTML page: [http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/1/](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/1/) (or as [raw JSON](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/wards/1.json))
 For **Count Points** and **Traffic Counts**, optional parameters can be passed (see docs for a full list) to filter the results. These API endpoints also return partially de-normalized data for convenience, to save having to make multiple API calls to get all details.
-Find all traffic counts that occurred in the "Halberton" ward in 2010:
-[http://aadf-api-live.eu-west-2.elasticbeanstalk.com/traffic_counts/?ward_name=Halberton&year=2010](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/traffic_counts/?ward_name=Halberton&year=2010)
-Find all count points within a rectangle given by easting/northing co-ordinates (useful for showing them as pins on a map!), in raw JSON format:
-[http://aadf-api-live.eu-west-2.elasticbeanstalk.com/count_points.json?min_easting=239468&min_northing=051064&max_easting=260404&max_northing=066148](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/count_points.json?min_easting=239468&min_northing=051064&max_easting=260404&max_northing=066148)
+* Find all traffic counts that occurred in the "Halberton" ward in 2010: [http://aadf-api-live.eu-west-2.elasticbeanstalk.com/traffic_counts/?ward_name=Halberton&year=2010](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/traffic_counts/?ward_name=Halberton&year=2010)
+* Find all count points within a rectangle given by easting/northing co-ordinates (useful for showing them as pins on a map!), in raw JSON format: [http://aadf-api-live.eu-west-2.elasticbeanstalk.com/count_points.json?min_easting=239468&min_northing=051064&max_easting=260404&max_northing=066148](http://aadf-api-live.eu-west-2.elasticbeanstalk.com/count_points.json?min_easting=239468&min_northing=051064&max_easting=260404&max_northing=066148)
 ## Notes
 * The script `importer/importer.py` uses the API to populate the database with a list of counts from a CSV file and ward geometry files. Note that this script assumes the database is empty. A more sophisticated script would be able to add additional data to an existing database.
 * The optional ability to query by ward is implemented. The import script uses the pyshp and Shapely libraries, as well as an algorithm from Hannah Fry (www.hannahfry.co.uk) for converting E/N to Lat/Lon, to figure out the Ward for each Count Point and store this in the database. A more elegant solution would probably be to use a Postgres extension that allows GIS data to be stored in the database, but it's not clear how easily that would work with Django and I didn't have time to try!
