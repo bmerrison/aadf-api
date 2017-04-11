@@ -105,7 +105,7 @@ def get_east_devon():
     print(set([r['lad16nm'] for r in records if 'devon' in r['lad16nm'].lower()]))
     
     for r, shape in zip(records, sf.shapes()):
-        polygon = Polygon(shape.points)
+        # polygon = Polygon(shape.points)
       
         # if polygon.contains(point):
         #     print(r['wd16nm'])
@@ -113,6 +113,6 @@ def get_east_devon():
         if 'charterlands' in r['wd16nm'].lower():
             for k,v in r.items():
                 print('{0}: {1}'.format(k,v))
-            print(shape.points)
+            #print(shape.points)
 
     

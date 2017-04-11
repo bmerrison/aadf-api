@@ -28,17 +28,21 @@ if __name__ == '__main__':
                 all_rows.append({col: val for col, val in zip(col_names, row)})
 
     # Load ward geometry for certain local authorities from
-    # the ward shapefiles.
-    # This is a bit messy because it's hard-coded, but it's optional
-    # anyway - just saves comparing with every ward in the country for speed!
-    # auth_names = ['North Devon', 'West Devon', 'East Devon',
-    #               'Mid Devon', 'Torridge', 'Teignbridge']
+    # the ward shapefiles. Restrict to (roughly) only those in the
+    # south west, using co-ordinates below.
+    min_easting, max_easting = 130687,342000
+    min_northing, max_northing = 10380,150750
     sf = shapefile.Reader(shapefile_name)
     field_names = [f[0] for f in sf.fields[1:]]
     records = [{f: v for f, v in zip(field_names, record)} for record in sf.records()]
     ward_polygons = []
     auth_names = []
     for record, shape in zip(records, sf.shapes()):
+        easting, northing = int(record['bng_e']), int(record['bng_n'])
+        if easting < min_easting or easting > max_easting or \
+           northing < min_northing or northing > max_northing:
+            continue
+        
         auth_name = record['lad16nm']
         if auth_name not in auth_names:
             auth_names.append(auth_name) # Yuck, should use set!
@@ -105,7 +109,7 @@ if __name__ == '__main__':
             raise
 
     # Get a set of unique (region name, local authority name) pairs.
-    # Since I'm not getting local authorities from the shapefile, no
+    # Since I'm getting local authorities from the shapefile, no
     # easy way to get the corresponding region so just hard code South West...
     print("Importing {0} local authorities...".format(len(auth_names)))
     # region_auth_ids will contain a mapping of (region,auth) name
@@ -206,6 +210,9 @@ if __name__ == '__main__':
                            for poly, ward_name, auth_name in ward_polygons
                            if poly.contains(point)]
         if len(auth_ward_names) != 1:
+            print("Warning: can't find ward for count point {0} (E{1} N{2}).".format(
+                cp[0], easting, northing))
+            print((cp[0], len(auth_ward_names)))
             continue
 
         auth_id = authority_ids[('South West', auth_ward_names[0][0])]
@@ -221,27 +228,28 @@ if __name__ == '__main__':
                                          'start_junction': start_junction_id,
                                          'end_junction': end_junction_id,
                                          'link_length': cp[9]})
-            key = (int(cp[0]), auth_id, road_id, easting, northing, start_junction_id, end_junction_id)
+            key = (int(cp[0]), road_id, easting, northing, start_junction_id, end_junction_id)
             assert(key not in cp_ids)
             cp_ids[key] = resp.get('id')
         except ErrorMessage as err:
             print("Error adding count point: {0}".format(err.error))
             raise
 
-    quit()
-    
     # Finally, import all count data.
     print("Importing {0} traffic counts...".format(len(all_rows)))
     for r in all_rows:
-        auth_id = authority_ids[(r['Region'], r['LocalAuthority'])]
         road_id = road_cat_ids[(r['Road'], r['RoadCategory'])]
         start_junction_id = junction_ids[r['StartJunction']] if r['StartJunction'] in junction_ids else None
         end_junction_id = junction_ids[r['EndJunction']] if r['EndJunction'] in junction_ids else None
         est_method_id = est_method_ids[r['Estimation_method_detailed']]
         
-        cp_key = (int(r['CP']), auth_id, road_id, int(r['Easting']), int(r['Northing']),
+        cp_key = (int(r['CP']), road_id, int(r['Easting']), int(r['Northing']),
                   start_junction_id, end_junction_id)
-        
+
+        if cp_key not in cp_ids:
+            print("Warning: can't find count point {0}, skipping {1} count.".format(
+                r['CP'], r['AADFYear']))
+            continue
         try:
             resp = client.action(schema,
                                  ['traffic_counts', 'create'],
