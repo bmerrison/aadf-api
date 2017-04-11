@@ -25,7 +25,7 @@ SECRET_KEY = 'ouzhuephz^jygt1ul(-3r^wre^5@kr6*v_nf4e3l0+ql8of+3!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['aadf-api-live.eu-west-2.elasticbeanstalk.com']
 
 
 # Application definition
@@ -77,6 +77,14 @@ WSGI_APPLICATION = 'aadf_api.wsgi.application'
 
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'aadf',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres', # Don't get excited, just for my dev PC.
+        'HOST': 'localhost',
+        'PORT': '',
+    },    
+    'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
