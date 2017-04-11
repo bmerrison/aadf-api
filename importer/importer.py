@@ -54,7 +54,7 @@ if __name__ == '__main__':
 
     # Get API schema.
     client = coreapi.Client()
-    schema = client.get('http://localhost:8000/schema')
+    schema = client.get('http://aadf-api-live.eu-west-2.elasticbeanstalk.com/schema')
 
     # Get a set of unique junction descriptions by combining all values from
     # the "StartJunction" and "EndJunction" columns.
