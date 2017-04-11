@@ -17,6 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 from rest_framework.schemas import get_schema_view
+from rest_framework.documentation import include_docs_urls
 from api_app import views
 
 router = DefaultRouter()
@@ -34,6 +35,7 @@ router.register(r'traffic_counts', views.TrafficCountViewSet,
 schema_view = get_schema_view(title='Average Annual Daily Flow API')
 
 urlpatterns = [
+    url(r'^docs/', include_docs_urls(title='Average Annual Daily Flow API')),
     url(r'^schema/$', schema_view),
     url(r'^', include(router.urls))
 ]

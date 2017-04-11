@@ -25,7 +25,7 @@ SECRET_KEY = 'ouzhuephz^jygt1ul(-3r^wre^5@kr6*v_nf4e3l0+ql8of+3!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['aadf-api-live.eu-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['aadf-api-live.eu-west-2.elasticbeanstalk.com', 'localhost']
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'django_filters',
     'api_app.apps.ApiAppConfig'
 ]
 
