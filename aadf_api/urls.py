@@ -20,7 +20,15 @@ from rest_framework.schemas import get_schema_view
 from rest_framework.documentation import include_docs_urls
 from api_app import views
 
-router = DefaultRouter()
+class Router(DefaultRouter):
+    def get_api_root_view(self, api_urls=None):
+        root_view = super(Router, self).get_api_root_view(api_urls=api_urls)
+        root_view.cls.__doc__ = "Welcome to the browsable annual average daily flow API. Click one of the links below to view objects. These aren't filtered, so opening a link with a lot of entries (e.g. traffic counts) might be very slow!"
+        return root_view
+
+router = Router()
+
+#router = DefaultRouter()
 router.register(r'junctions', views.JunctionViewSet)
 router.register(r'estimation_methods', views.EstimationMethodViewSet)
 router.register(r'regions', views.RegionViewSet)

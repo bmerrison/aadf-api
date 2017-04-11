@@ -1,4 +1,4 @@
-# Average Annual Daily Flow API
+# Annual Average Daily Flow API
 My API is hosted on an Amazon Elastic Beanstalk instance and can be accessed [here](http://aadf-api-live.eu-west-2.elasticbeanstalk.com). The API was created using the [Django REST framework](http://www.django-rest-framework.org/) and the database backend is Postgres, as specified.
 ## Object Types
 The API uses the following object types, which correspond to database tables:
