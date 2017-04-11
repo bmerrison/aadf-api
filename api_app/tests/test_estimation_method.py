@@ -2,12 +2,13 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from api_app.models import Junction, EstimationMethod
-
+from test_util import login
 class EstimationMethodTests(APITestCase):
     def test_create_estimation_method(self):
         """
         Test adding a new estimation method."
         """
+        login(self.client)
         url = reverse('estimationmethod-list')
         data = {'description': 'Test estimation method'}
         response = self.client.post(url, data, format='json')
@@ -19,6 +20,7 @@ class EstimationMethodTests(APITestCase):
         """
         Test that adding an estimation method with an existing description fails."
         """
+        login(self.client)
         url = reverse('estimationmethod-list')
         data = {'description': 'Test estimation method'}
         response = self.client.post(url, data, format='json')

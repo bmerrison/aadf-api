@@ -2,12 +2,14 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from api_app.models import Region, LocalAuthority
+from test_util import login
 
 class RegionTests(APITestCase):
     def test_create_region(self):
         """
         Test adding a new region."
         """
+        login(self.client)
         url = reverse('region-list')
         data = {'name': 'Test region'}
         response = self.client.post(url, data, format='json')
@@ -19,6 +21,7 @@ class RegionTests(APITestCase):
         """
         Test that adding a region with an existing name fails."
         """
+        login(self.client)
         url = reverse('region-list')
         data = {'name': 'Test region'}
         response = self.client.post(url, data, format='json')
@@ -30,6 +33,7 @@ class RegionTests(APITestCase):
         """
         Test adding a new local authority."
         """
+        login(self.client)
         url = reverse('region-list')
         data = {'name': 'Test region'}
         response = self.client.post(url, data, format='json')
@@ -50,6 +54,7 @@ class RegionTests(APITestCase):
         Test adding local authorities with duplicate names. Should be
         allowed as long as they're in different regions.
         """
+        login(self.client)
         # Create a couple of regions.
         url = reverse('region-list')
         data = {'name': 'Test region 1'}

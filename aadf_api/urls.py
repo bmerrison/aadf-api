@@ -37,5 +37,7 @@ schema_view = get_schema_view(title='Average Annual Daily Flow API')
 urlpatterns = [
     url(r'^docs/', include_docs_urls(title='Average Annual Daily Flow API')),
     url(r'^schema/$', schema_view),
+    url(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
     url(r'^', include(router.urls))
 ]

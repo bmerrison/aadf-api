@@ -20,10 +20,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ouzhuephz^jygt1ul(-3r^wre^5@kr6*v_nf4e3l0+ql8of+3!'
+if 'DJANGO_SECRET_KEY' in os.environ:
+    # Running on AEB.
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+    DEBUG = False
+else:
+    SECRET_KEY = 'ouzhuephz^jygt1ul(-3r^wre^5@kr6*v_nf4e3l0+ql8of+3!'
+    DEBUG = True
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = ['aadf-api-live.eu-west-2.elasticbeanstalk.com', 'localhost']
 

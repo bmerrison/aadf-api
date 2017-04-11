@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 
 import django_filters
@@ -23,34 +23,41 @@ from api_app.serializers import JunctionSerializer, \
     CountPointSerializer, \
     TrafficCountSerializer
 
-class JunctionViewSet(viewsets.ReadOnlyModelViewSet):
+class JunctionViewSet(viewsets.ModelViewSet):
     queryset = Junction.objects.all()
     serializer_class = JunctionSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-class EstimationMethodViewSet(viewsets.ReadOnlyModelViewSet):
+class EstimationMethodViewSet(viewsets.ModelViewSet):
     queryset = EstimationMethod.objects.all()
     serializer_class = EstimationMethodSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     
-class RegionViewSet(viewsets.ReadOnlyModelViewSet):
+class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
-
-class LocalAuthorityViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    
+class LocalAuthorityViewSet(viewsets.ModelViewSet):
     queryset = LocalAuthority.objects.all()
     serializer_class = LocalAuthoritySerializer
-
-class WardViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    
+class WardViewSet(viewsets.ModelViewSet):
     queryset = Ward.objects.all()
     serializer_class = WardSerializer
-
-class RoadCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    
+class RoadCategoryViewSet(viewsets.ModelViewSet):
     queryset = RoadCategory.objects.all()
     serializer_class = RoadCategorySerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     
-class RoadViewSet(viewsets.ReadOnlyModelViewSet):
+class RoadViewSet(viewsets.ModelViewSet):
     queryset = Road.objects.all()
     serializer_class = RoadSerializer
-
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    
 class CountPointFilter(FilterSet):
     road_name = django_filters.CharFilter(name='road__name')
     ward_name = django_filters.CharFilter(name='ward__name')
@@ -68,7 +75,7 @@ class CountPointFilter(FilterSet):
                   'start_junction_desc', 'end_junction', 'end_junction_desc',
                   'min_easting', 'max_easting', 'min_northing', 'max_northing']
         
-class CountPointViewSet(viewsets.ReadOnlyModelViewSet):
+class CountPointViewSet(viewsets.ModelViewSet):
     """
     list: Returns a list of count points. The optional parameters given below
     can be used to filter the list. For example, the min_ and max_ northing and
@@ -83,7 +90,8 @@ class CountPointViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CountPointSerializer    
     filter_backends = (DjangoFilterBackend,)
     filter_class = CountPointFilter
-
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    
 class TrafficCountFilter(FilterSet):
     count_point_reference = django_filters.NumberFilter(name='count_point__reference')
     road = django_filters.NumberFilter(name='count_point__road')
@@ -106,7 +114,7 @@ class TrafficCountFilter(FilterSet):
                   'start_junction_desc', 'end_junction', 'end_junction_desc',
                   'min_easting', 'max_easting', 'min_northing', 'max_northing', 'year', 'estimated']
     
-class TrafficCountViewSet(viewsets.ReadOnlyModelViewSet):
+class TrafficCountViewSet(viewsets.ModelViewSet):
     """
     list: Returns a list of traffic counts. The optional parameters given below
     can be used to filter the list. For example, the ward_name and year parameters
@@ -119,4 +127,4 @@ class TrafficCountViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = TrafficCountSerializer    
     filter_backends = (DjangoFilterBackend,)
     filter_class = TrafficCountFilter
-    
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)

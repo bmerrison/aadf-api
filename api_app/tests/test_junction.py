@@ -2,12 +2,14 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from api_app.models import Junction
+from test_util import login
 
 class JunctionTests(APITestCase):
     def test_create_junction(self):
         """
         Test adding a new junction."
         """
+        login(self.client)
         url = reverse('junction-list')
         data = {'description': 'Test junction'}
         response = self.client.post(url, data, format='json')
@@ -19,6 +21,7 @@ class JunctionTests(APITestCase):
         """
         Test that adding a junction with an existing description fails."
         """
+        login(self.client)
         url = reverse('junction-list')
         data = {'description': 'Test junction'}
         response = self.client.post(url, data, format='json')

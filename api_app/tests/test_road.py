@@ -2,13 +2,14 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from api_app.models import Road, RoadCategory
+from test_util import login
 
 class RegionTests(APITestCase):
     def test_create_road(self):
         """
         Test adding a new road."
         """
-
+        login(self.client)
         # Add a category first (should be separate test?)
         url = reverse('roadcategory-list')
         data = {'code': 'PM',
@@ -34,7 +35,7 @@ class RegionTests(APITestCase):
         """
         Test adding roads with duplicate names. Should be allowed if category is different."
         """
-
+        login(self.client)
         # Create a couple of categories.
         url = reverse('roadcategory-list')
         data = {'code': 'PM',
