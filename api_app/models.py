@@ -82,7 +82,7 @@ class CountPoint(models.Model):
     """A location at which an AADF count has been made.
     Attributes:
     reference: A numeric ID given to the count point (*not* unique!)
-    local_authority: Foreign key to the LocalAuthority responsible for the location.
+    local_authority: Foreign key to the council Ward responsible for the location.
     road: Foreign key to the Road where the count was taken.
     easting, northing: Map co-ordinates of the location (unique together).
     start_junction: Foreign key to the Junction at the start of the link (may be null).
@@ -90,8 +90,8 @@ class CountPoint(models.Model):
     link_length: The length of the link (in kilometres).
     """
     reference = models.IntegerField()
-    local_authority = models.ForeignKey('LocalAuthority',
-                                        on_delete=models.CASCADE)
+    ward = models.ForeignKey('Ward',
+                             on_delete=models.CASCADE)    
     road = models.ForeignKey('Road',
                              on_delete=models.CASCADE)
     easting = models.IntegerField()

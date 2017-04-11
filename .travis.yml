@@ -7,6 +7,3 @@ install:
   - pip install -r requirements.txt
 # command to run tests
 script: py.test
-
-notifications:
-  irc: "ircs://irc.asylumnet.org/#wuzzle"

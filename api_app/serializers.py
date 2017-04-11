@@ -59,8 +59,9 @@ class RoadSerializer(serializers.ModelSerializer):
 class CountPointSerializer(serializers.ModelSerializer):
     road_name = serializers.ReadOnlyField(source='road.name')
     road_category_code = serializers.ReadOnlyField(source='road.category.code')
-    local_authority_name = serializers.ReadOnlyField(source='local_authority.name')
-    region_name = serializers.ReadOnlyField(source='local_authority.region.name')
+    ward_name = serializers.ReadOnlyField(source='ward.name')
+    local_authority_name = serializers.ReadOnlyField(source='ward.local_authority.name')
+    region_name = serializers.ReadOnlyField(source='ward.local_authority.region.name')
     start_junction_desc = serializers.ReadOnlyField(source='start_junction.description')
     end_junction_desc = serializers.ReadOnlyField(source='end_junction.description')
     link_length_miles = serializers.SerializerMethodField('km_to_miles')
@@ -70,7 +71,7 @@ class CountPointSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = CountPoint
-        fields = ('id', 'reference', 'local_authority', 'local_authority_name',
+        fields = ('id', 'reference', 'ward', 'ward_name', 'local_authority_name',
                   'region_name', 'road', 'road_name', 'road_category_code', 'easting',
                   'northing', 'start_junction', 'start_junction_desc', 'end_junction',
                   'end_junction_desc', 'link_length', 'link_length_miles')

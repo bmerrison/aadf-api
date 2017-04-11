@@ -209,19 +209,22 @@ if __name__ == '__main__':
         auth_ward_names = [(auth_name, ward_name)
                            for poly, ward_name, auth_name in ward_polygons
                            if poly.contains(point)]
-        if len(auth_ward_names) != 1:
-            print("Warning: can't find ward for count point {0} (E{1} N{2}).".format(
+        if len(auth_ward_names) == 0:
+            print("Warning: can't find ward for count point {0} (E{1} N{2}). Skipping.".format(
                 cp[0], easting, northing))
-            print((cp[0], len(auth_ward_names)))
             continue
+        elif len(auth_ward_names) > 1:
+            print("Warning: multiple wards for count point {0} (E{1} N{2}). Skipping.".format(
+                cp[0], easting, northing))
+            continue        
 
-        auth_id = authority_ids[('South West', auth_ward_names[0][0])]
+        ward_id = ward_ids[(auth_ward_names[0][0]), auth_ward_names[0][1]]
         
         try:
             resp = client.action(schema,
                                  ['count_points', 'create'],
                                  params={'reference': int(cp[0]),
-                                         'local_authority': auth_id,
+                                         'ward': ward_id,
                                          'road': road_id,
                                          'easting': easting,
                                          'northing': northing,

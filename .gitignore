@@ -3,3 +3,7 @@ db.sqlite3
 *~
 .cache
 importer/Wards_*
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

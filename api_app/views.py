@@ -58,7 +58,16 @@ class CountPointViewSet(viewsets.ModelViewSet):
         # Optional simple filter criteria. If multiple criteria are given,
         # the results must match them all.
         possible_filters = (('reference', 'reference'),
-                            ('road_name', 'road__name'),)
+                            ('road', 'road'),
+                            ('road_name', 'road__name'),
+                            ('ward', 'ward'),
+                            ('ward_name', 'ward__name'),
+                            ('local_authority', 'local_authority'),
+                            ('local_authority_name', 'local_authority__name'),
+                            ('start_junction', 'start_junction'),
+                            ('start_junction_desc', 'start_junction__description'),
+                            ('end_junction', 'end_junction'),
+                            ('end_junction_desc', 'end_junction__description'),)
         kwargs = {}
         for req_param, attrib in possible_filters:
             req_val = self.request.query_params.get(req_param, None)
@@ -87,10 +96,20 @@ class TrafficCountViewSet(viewsets.ModelViewSet):
 
         # Optional simple filter criteria. If multiple criteria are given,
         # the results must match them all.
-        possible_filters = (('count_point_ref', 'count_point__reference'),
+        possible_filters = (('count_point', 'count_point'),
+                            ('count_point_ref', 'count_point__reference'),
                             ('year', 'year'),
                             ('estimated', 'estimated'),
-                            ('road_name', 'count_point__road__name'),)
+                            ('road', 'count_point__road'),
+                            ('road_name', 'count_point__road__name'),
+                            ('ward', 'count_point__ward'),
+                            ('ward_name', 'count_point__ward__name'),
+                            ('local_authority', 'count_point__local_authority'),
+                            ('local_authority_name', 'count_point__local_authority__name'),
+                            ('start_junction', 'count_point__start_junction'),
+                            ('start_junction_desc', 'count_point__start_junction__description'),
+                            ('end_junction', 'count_point__end_junction'),
+                            ('end_junction_desc', 'count_point__end_junction__description'),)
         kwargs = {}
         for req_param, attrib in possible_filters:
             req_val = self.request.query_params.get(req_param, None)
