@@ -40,10 +40,10 @@ router.register(r'count_points', views.CountPointViewSet)
 router.register(r'traffic_counts', views.TrafficCountViewSet,
                 base_name='trafficcounts')
 
-schema_view = get_schema_view(title='Average Annual Daily Flow API')
+schema_view = get_schema_view(title='Annual Average Daily Flow API')
 
 urlpatterns = [
-    url(r'^docs/', include_docs_urls(title='Average Annual Daily Flow API')),
+    url(r'^docs/', include_docs_urls(title='Annual Average Daily Flow API')),
     url(r'^schema/$', schema_view),
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
